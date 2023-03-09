@@ -1,0 +1,22 @@
+api_version: 1.0
+
+id: boostsecurityio/checkov-tf-plan
+name: BoostSecurity Checkov TF Plan
+namespace: boostsecurityio/checkov-tf-plan
+
+config:
+  support_diff_scan: true
+  require_full_repo: true
+
+steps:
+  - scan:
+      command:
+        docker:
+          image: bridgecrew/checkov:2.3.70@sha256:6107155c073bd969c39ea29291192459e077b2f934601683c3b33fd0fb2f9e5c
+          command: --file ./boost.tfplan.json --output json --soft-fail --compact --skip-download
+          workdir: /src
+      format: sarif
+      post-processor:
+        docker:
+          image: public.ecr.aws/boostsecurityio/boost-scanner-checkov:c9a1b11@sha256:fb2e2b7abb910918c99875ce5234be6366b5d61b614eb19a06393cbb04d80c2f
+          command: process
